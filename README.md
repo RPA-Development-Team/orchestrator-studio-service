@@ -9,6 +9,7 @@ Clone the repository to your local machine.
 Install the project dependencies by running the following command in the project root directory:
 
 npm install
+
 Create a Google Cloud Storage bucket and download the JSON file containing your service account key.
 
 Rename the downloaded JSON file to "encoded-mark-380613-fde460d8164e.json" and place it in the project root directory.
@@ -19,6 +20,7 @@ Start the web server by running the following command in the project root direct
 
 
 npm start
+
 Navigate to http://localhost:8000 in your web browser to view the application.
 
 # Usage
