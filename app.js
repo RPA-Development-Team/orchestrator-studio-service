@@ -47,8 +47,8 @@ const coolFilesBucket = gc.bucket("orchestrator_bucket");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define a route for handling form submissions via POST method
-app.post("/submit-form",
-  upload.fields([{ name: "packageName" }, {name:"xamlFile"},{ name: "date" }, { name: "repeat" }]),
+app.post("/api/packages/create",
+  upload.fields([{ name: "packageName" }, { name: "xamlFile" }, { name: "date" }, { name: "repeat" }]),
   (req, res) => {
     console.log("all data");
     console.log(req.body); // Log the parsed request body for debugging purposes
@@ -77,10 +77,10 @@ app.post("/submit-form",
             },
           },
         );
-          const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `
+        const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `
         // Save the form data to the database
         const { packageName, date, repeat } = req.body;
-        
+
 
         pool.query(
           "INSERT INTO processes(packageName, date, xamlFile, repeat) VALUES($1, $2, $3, $4)",
@@ -101,6 +101,42 @@ app.post("/submit-form",
     });
   }
 );
+app.get("/api/packages", (req, res) => {
+  pool.query(
+    `SELECT * FROM processes`,
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        console.table(result.rows);
+        res
+          .status(200)
+          .send(result.rows);
+      }
+    }
+  )
+});
+
+app.get("/api/packages/:id", (req, res) => {
+  const id = req.params.id;
+  pool.query(
+    `DELETE FROM processes WHERE id=${id}`,
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        console.table(result.rows);
+        res
+          .status(200)
+          .redirect("http://localhost:3000/process");
+      }
+    }
+  )
+});
+
+
 
 // Start the server and listen on port 8000
 const port = 8000;
