@@ -8,7 +8,7 @@
   "description": "",
   "scripts": {
       "start": "nodemon app.js",
-      "test": "jest --detectOpenHandles --",
+      "test": "jest --detectOpenHandles --"
   },
   "dependencies": {
     "@google-cloud/storage": "^6.9.4",
