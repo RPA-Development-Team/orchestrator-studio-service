@@ -1,5 +1,6 @@
 // Import required modules
 const express = require("express");
+const axios = require("axios");
 const multer = require("multer"); // Middleware for handling multipart/form-data (i.e. file uploads)
 const fs = require("fs");
 const { Storage } = require("@google-cloud/storage");
@@ -11,9 +12,6 @@ dotenv.config();
 const dbConfig = require('./db/dbConfig');
 const { Pool } = require('pg');
 const pool = new Pool(dbConfig);
-
-
-
 
 
 // Configure multer to store uploaded files in the "uploads" directory, and generate a unique filename for each file
@@ -28,8 +26,7 @@ let storage = multer.diskStorage({
     ); // Set the filename to "<fieldname>-<timestamp>.<extension>"
   },
 });
-// Create a multer instance that uses the configured storage options
-const upload = multer({ storage: storage });
+
 
 const gc = new Storage({
   keyFilename: path.join(__dirname, "./encoded-mark-380613-fde460d8164e.json"),
@@ -45,62 +42,65 @@ const coolFilesBucket = gc.bucket("orchestrator_bucket");
 
 // Use the body-parser middleware to parse HTTP request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Define a route for handling form submissions via POST method
-app.post("/api/packages/create",
-  upload.fields([{ name: "packageName" }, { name: "xamlFile" }, { name: "date" }, { name: "repeat" }]),
-  (req, res) => {
-    console.log("all data");
-    console.log(req.body); // Log the parsed request body for debugging purposes
+app.post("/api/packages/create", (req, res) => {
+  console.log("all data");
+  console.log(req.body); // Log the parsed request body for debugging purposes
 
-    // Get the xamlFile value from the POST request
-    const xamlFile = req.body.xamlFile;
+  // Get the xamlFile value from the POST request
+  let xamlFile = req.body.xamlFile;
+  const buffer = Buffer.from(xamlFile,"base64");
+  xamlFile = buffer.toString("utf-8")
+  // console.log("XXXXXXX")
+  // console.log(xamlFile)
 
-    // Write the xamlFile value to the new file using Node's built-in file system module
-    const xamlpath = `xaml-${Date.now()}.xaml`
-    const filePath = `./uploads/${xamlpath}`;
+  // Write the xamlFile value to the new file using Node's built-in file system module
+  const xamlpath = `xaml-${Date.now()}.xaml`;
+  const filePath = `./uploads/${xamlpath}`;
 
-    fs.writeFile(filePath, xamlFile, function (err) {
-      if (err) {
-        // Handle any errors that occur during file write
-        console.error(err);
-        res.send("Error saving file");
-      } else {
-        // Upload the xamlFile to Google Cloud Storage
-        coolFilesBucket.upload(
-          filePath,
-          {
-            gzip: true,
-            metadata: {
-              cacheControl:
-                "public, max-age=31536000", //This means that the file can be cached by any public client, such as a web browser, for up to 1 year
-            },
-          },
-        );
-        const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `
-        // Save the form data to the database
-        const { packageName, date, repeat } = req.body;
+  fs.writeFile(filePath, xamlFile, function (err) {
+    if (err) {
+      // Handle any errors that occur during file write
+      console.error(err);
+      res.send("Error saving file");
+    } else {
+      // Upload the xamlFile to Google Cloud Storage
+      coolFilesBucket.upload(filePath, {
+        gzip: true,
+        metadata: {
+          cacheControl:
+            "public, max-age=31536000", //This means that the file can be cached by any public client, such as a web browser, for up to 1 year
+        },
+      });
+      const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `;
+      // Save the form data to the database
+      const { packageName, date, time } = req.body;
 
-
-        pool.query(
-          "INSERT INTO processes(packageName, date, xamlFile, repeat) VALUES($1, $2, $3, $4)",
-          [packageName, date, pathDb, repeat],
-          (err, result) => {
-            if (err) {
-              console.log(err);
-              res.status(500).json({ error: "Internal server error" });
-            } else {
-              console.log("Form data saved successfully");
-              res
-                .status(200)
-                .json({ message: "Form data saved successfully" });
-            }
+      pool.query(
+        "INSERT INTO processes(packageName, date, xamlFile, time) VALUES($1, $2, $3, $4)",
+        [packageName, date, pathDb, time],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+            res.status(500).json({ error: "Internal server error" });
+          } else {
+            console.log("Form data saved successfully");
+            // send to abdo      
+            const machine_name = "Abdo-Machine";
+            const package = {package_name:packageName,machine_name,pathDb,date,time}
+            axios.post("http://192.168.1.145:4000/pkg", package)
+            res.status(200).json({ message: "Form data saved successfully" });
           }
-        );
-      }
-    });
-  }
-);
+        }
+      );
+      
+      
+
+    }
+  });
+});
+
 app.get("/api/packages", (req, res) => {
   pool.query(
     `SELECT * FROM processes`,
@@ -128,16 +128,11 @@ app.get("/api/packages/:id", (req, res) => {
         res.status(500).json({ error: "Internal server error" });
       } else {
         console.table(result.rows);
-        res
-          .status(200)
-          .redirect("http://localhost:3000/process");
+        res.status(200).redirect("http://localhost:3000/process");
       }
     }
   )
 });
-
-
-
 // Start the server and listen on port 8000
 const port = 8000;
 app.listen(port, () => {
