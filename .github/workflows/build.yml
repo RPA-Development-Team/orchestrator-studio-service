@@ -35,4 +35,4 @@ build-and-deploy:
         key: ${{ secrets.GCE_KEY }}
         script: |
           cd ${{ secrets.GCE_DEPLOYMENT_PATH }}/orchestrator-studio-service && git pull origin master && cd ${{ secrets.GCE_DEPLOYMENT_PATH }}/orchestrator-nginx-gateway
-          sudo docker compose up -d --build nginx
+          sudo docker compose up -d --build orch-studio-service
