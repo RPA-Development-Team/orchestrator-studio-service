@@ -9,9 +9,17 @@ const app = express();
 const path = require("path"); // Node.js module for working with file paths
 const dotenv = require('dotenv');
 dotenv.config();
+const env = process.env;
 const dbConfig = require('./db/dbConfig');
 const { Pool } = require('pg');
-const pool = new Pool(dbConfig);
+const pool = new Pool({
+  host: env.PGHOST,
+  user: env.PGUSER,
+  port: env.PGPORT,
+  password: env.PGPASSWORD,
+  database: env.PGDATABASE,
+  ssl: true,
+});
 
 
 // Configure multer to store uploaded files in the "uploads" directory, and generate a unique filename for each file
@@ -76,7 +84,6 @@ app.post("/api/packages/create", (req, res) => {
       const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `;
       // Save the form data to the database
       const { packageName, date, time } = req.body;
-
       pool.query(
         "INSERT INTO processes(packageName, date, xamlFile, time) VALUES($1, $2, $3, $4)",
         [packageName, date, pathDb, time],
@@ -89,7 +96,7 @@ app.post("/api/packages/create", (req, res) => {
             // send to abdo      
             const machine_name = "Abdo-Machine";
             const package = {package_name:packageName,machine_name,pathDb,date,time}
-            axios.post("http://192.168.1.145:4000/pkg", package)
+            axios.post("http://orch-robot-service:8000/pkg", package)
             res.status(200).json({ message: "Form data saved successfully" });
           }
         }

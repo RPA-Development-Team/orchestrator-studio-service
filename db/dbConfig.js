@@ -7,6 +7,7 @@ exports.dbConfig = {
     user: env.PGUSER,
     port: env.PGPORT,
     password: env.PGPASSWORD,
-    database: env.PGDATABASE 
+    database: env.PGDATABASE,
+    ssl: true,
 }
 
