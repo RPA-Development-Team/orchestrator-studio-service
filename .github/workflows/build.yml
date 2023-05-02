@@ -25,7 +25,6 @@ jobs:
     name: Build and Deploy
     needs: test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
     - name: "Connect to VM"
       uses: appleboy/ssh-action@v0.1.10
