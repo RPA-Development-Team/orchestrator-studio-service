@@ -7,7 +7,7 @@
   "license": "ISC",
   "description": "",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "npx prisma generate && nodemon app.js",
     "test": "jest --passWithNoTests --detectOpenHandles --"
   },
   "dependencies": {
