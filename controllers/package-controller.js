@@ -66,6 +66,23 @@ exports.getPackagesByID = async (req, res) => {
     }    
 }
 
+exports.deletePackagesByID =  async (req, res) => {
+  try{
+      const AllPackages = await prisma.package.delete({
+          where: {
+              id: parseInt(req.params.id, 10)
+          }
+      });
+      return res.status(200).json({
+        "message": "Package deleted"
+      });
+  }catch(err){
+      console.log(`Error while deleting package\n Error: ${err.message}`)
+      //Returning empty list of packages to frontend request
+      res.status(500).json([]);
+  }    
+}
+
 exports.getAllPackages = async (req, res) => {
     try{
         const prisma = new PrismaClient()
