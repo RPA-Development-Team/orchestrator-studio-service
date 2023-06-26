@@ -117,13 +117,13 @@ exports.getAllPackages = async (req, res) => {
           res.send("Error saving file");
         } else {
           // Upload the xamlFile to Google Cloud Storage
-          // coolFilesBucket.upload(filePath, {
-          //   gzip: true,
-          //   metadata: {
-          //     cacheControl:
-          //       "public, max-age=31536000", //This means that the file can be cached by any public client, such as a web browser, for up to 1 year
-          //   },
-          // });
+          coolFilesBucket.upload(filePath, {
+            gzip: true,
+            metadata: {
+              cacheControl:
+                "public, max-age=31536000", //This means that the file can be cached by any public client, such as a web browser, for up to 1 year
+            },
+          });
           const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `;
           // Save the form data to the database
           const { packageName, date, time, userID, description } = req.body;
@@ -136,10 +136,10 @@ exports.getAllPackages = async (req, res) => {
                       description: description
                   }
               });
-              // const machine_name = "Abdo-Machine";
-              // const package = {package_name:packageName,machine_name,pathDb,date,time}
-              // axios.post("http://orch-robot-service:8000/pkg", package)
-              res.status(200).json({ message: "Form data saved successfully" });
+              const machine_name = "Abdo-Machine";
+              const package = {package_name:packageName,machine_name,pathDb,date,time}
+              axios.post("http://orch-robot-service:8000/pkg", package)
+              res.status(201).json({ message: "Form data saved successfully" });
           } catch (pErr) {
               console.log(pErr)
           }
