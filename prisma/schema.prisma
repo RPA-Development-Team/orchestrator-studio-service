@@ -1,29 +1,26 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Robot {
 
-  id        Int      @id @default(sequence())
+  id        Int      @id 
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt 
 
-  robotName   String   @unique @db.String(255)
+  robotName   String   @unique 
 
-  robotAddress String? @unique @db.String(255)
+  robotAddress String? @unique 
 
   connected Boolean @default(false)
 
@@ -39,21 +36,21 @@ model Robot {
 
 model UserAccount {
 
-  id      Int      @id @default(sequence())
+  id      Int      @id@default(autoincrement())
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
 
-  username String @unique
+  username String @unique 
 
   email   String   @unique
 
   password String?
 
-  firstName    String? @db.String(20)
+  firstName    String? 
 
-  lastName    String? @db.String(20)
+  lastName    String? 
 
   robots    Robot[]
 
@@ -63,13 +60,13 @@ model UserAccount {
 
 model Package {
 
-  id        Int      @id @default(sequence())
+  id        Int      @id @default(autoincrement()) 
 
-  name   String   @unique @db.String(255)
+  name   String   @unique 
 
   uploadDate DateTime @default(now())
 
-  packageUrl String? @unique @db.String(255)
+  packageUrl String? @unique 
 
   user    UserAccount  @relation(fields: [userID], references: [id])
 
@@ -77,11 +74,13 @@ model Package {
 
   jobs Job[]
 
+  description String 
+
 }
 
 model Job {
 
-  id Int @id @default(sequence())
+  id Int @id 
 
   createdAt DateTime @default(now())
 
@@ -99,18 +98,17 @@ model Job {
 
 model Log {
 
-  id        Int      @id @default(sequence())
+  id        Int      @id 
 
   logType   String   
 
-  emittingEntity String? @db.String(255)
+  emittingEntity String? 
 
-  status String?  @db.String(20)
+  status String? 
 
   timestamp DateTime @default(now())
 
-  message String?  @db.String(255)
-
+  message String? 
   robot    Robot  @relation(fields: [robotId], references: [id])
 
   robotId  Int
