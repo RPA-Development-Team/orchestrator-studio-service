@@ -136,9 +136,6 @@ exports.getAllPackages = async (req, res) => {
                       description: description
                   }
               });
-              const machine_name = "Abdo-Machine";
-              const package = {package_name:packageName,machine_name,pathDb,date,time}
-              // axios.post("http://orch-robot-service:8000/pkg", package)
               res.status(201).json({ message: "Form data saved successfully" });
           } catch (pErr) {
               console.log(pErr)
