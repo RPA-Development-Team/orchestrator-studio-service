@@ -17,7 +17,7 @@ let storage = multer.diskStorage({
       callback(
         null,
         file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-      ); // Set the filename to "<fieldname>-<timestamp>.<extension>"
+      ); 
     },
   });
   

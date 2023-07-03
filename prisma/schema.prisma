@@ -77,6 +77,8 @@ model Package {
 
   jobs Job[]
 
+  description String
+
 }
 
 model Job {
