@@ -17,22 +17,19 @@ let storage = multer.diskStorage({
       callback(
         null,
         file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-      ); // Set the filename to "<fieldname>-<timestamp>.<extension>"
+      ); 
     },
   });
   
   
   const gc = new Storage({
-    keyFilename: path.join(__dirname, "../encoded-mark-380613-fde460d8164e.json"),
-    projectId: "encoded-mark-380613",
+    keyFilename: path.join(__dirname, "../neat-phoenix-391420-d350ecdf6712.json"),
+    projectId: "neat-phoenix-391420",
   });
   
   
-  // to get the id = the name of bucket in gc 
-  // gc.getBuckets().then(x => console.log(x)); 
-  // id: 'orchestrator_bucket',
-  
-  const coolFilesBucket = gc.bucket("orchestrator_bucket");
+
+  const coolFilesBucket = gc.bucket("prch-pkg");
 
 exports.getPackagesByUserID = async (req, res) => {
     try{
@@ -95,6 +92,7 @@ exports.getAllPackages = async (req, res) => {
         res.status(500).json([])
     }    
 }
+
 
   exports.createPackage = async (req, res) => {
 
@@ -175,3 +173,4 @@ exports.getAllPackages = async (req, res) => {
     }
   };
   
+

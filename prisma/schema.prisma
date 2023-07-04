@@ -73,7 +73,7 @@ model Package {
   userID  Int
 
   jobs Job[]
-
+  
   description String 
 
 }
