@@ -94,12 +94,10 @@ exports.getAllPackages = async (req, res) => {
 }
 
 
-  // to get the id = the name of bucket in gc 
-  // gc.getBuckets().then(x => console.log(x)); 
-  // id: 'prch-pkg',
-  
-
   exports.createPackage = async (req, res) => {
+
+      console.log("all data");
+      console.log(req.body); // Log the parsed request body for debugging purposes
     
       // Get the xamlFile value from the POST request
       let xamlFile = req.body.xamlFile;
@@ -124,7 +122,7 @@ exports.getAllPackages = async (req, res) => {
                 "public, max-age=31536000", //This means that the file can be cached by any public client, such as a web browser, for up to 1 year
             },
           });
-          const pathDb = `http://prch-pkg.storage.googleapis.com/${xamlpath} `;
+          const pathDb = `http://orchestrator_bucket.storage.googleapis.com/${xamlpath} `;
           // Save the form data to the database
           const { packageName, date, time, userID, description } = req.body;
           try {
@@ -136,6 +134,9 @@ exports.getAllPackages = async (req, res) => {
                       description: description
                   }
               });
+              const machine_name = "Abdo-Machine";
+              const package = {package_name:packageName,machine_name,pathDb,date,time}
+              axios.post("http://orch-robot-service:8000/pkg", package)
               res.status(201).json({ message: "Form data saved successfully" });
           } catch (pErr) {
               console.log(pErr)
@@ -172,3 +173,4 @@ exports.getAllPackages = async (req, res) => {
     }
   };
   
+

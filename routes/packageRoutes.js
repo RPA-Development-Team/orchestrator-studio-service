@@ -8,4 +8,5 @@ router.route("/:id").get(packageController.getPackagesByID);
 router.route("/:id").delete(packageController.deletePackagesByID);
 router.route("/user/:id").get(packageController.getPackagesByUserID);
 router.route("/:id").put(packageController.updatePackage);
+
 module.exports = router;
