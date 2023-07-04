@@ -1,15 +1,12 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +19,7 @@ model Robot {
 
   robotName String @unique @db.String(255)
 
-  robotAddress String? @unique @db.String(255)
+  robotAddress String? @unique 
 
   connected Boolean @default(false)
 
@@ -49,7 +46,7 @@ model UserAccount {
 
   updatedAt DateTime @updatedAt
 
-  username String @unique
+  username String @unique 
 
   email String @unique
 
@@ -89,7 +86,7 @@ model Package {
 
   uploadDate DateTime @default(now())
 
-  packageUrl String? @unique @db.String(255)
+  packageUrl String? @unique 
 
   user UserAccount @relation(fields: [userID], references: [id])
 
@@ -129,7 +126,7 @@ model Log {
 
   logType String
 
-  emittingEntity String? @db.String(255)
+  emittingEntity String? 
 
   status String? @db.String(20)
 

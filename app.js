@@ -12,8 +12,13 @@ app.use(express.json());
 
 app.use('/api', routes);
 
+
+
 // Start the server and listen on port 8000
 const port = 8000;
 app.listen(port, () => {
   console.log(`Server listeningon port ${port}`);
 });
+
+
+module.exports = app;
