@@ -26,7 +26,7 @@ model Robot {
 
   connected Boolean @default(false)
 
-  user UserAccount @relation(fields: [userID], references: [id])
+  user UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade)
 
   userID Int
 
@@ -65,7 +65,7 @@ model UserAccount {
 
   externalProvider String? @db.String(25)
 
-  admin UserAccount? @relation("UserAccount", fields: [adminID], references: [id])
+  admin UserAccount? @relation("UserAccount", fields: [adminID], references: [id], onDelete: Cascade)
 
   adminID Int?
 
@@ -93,7 +93,7 @@ model Package {
 
   packageUrl String? @unique @db.String(255)
 
-  user UserAccount @relation(fields: [userID], references: [id])
+  user UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade)
 
   userID Int
 
@@ -113,15 +113,15 @@ model Job {
 
   scheduledDateTime DateTime
 
-  package Package @relation(fields: [packageID], references: [id])
+  package Package @relation(fields: [packageID], references: [id], onDelete: Cascade)
 
   packageID Int
 
-  robot Robot @relation(fields: [robotID], references: [id])
+  robot Robot @relation(fields: [robotID], references: [id], onDelete: Cascade)
 
   robotID Int
 
-  user UserAccount @relation(fields: [userID], references: [id])
+  user UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade)
 
   userID Int
 }
@@ -139,7 +139,7 @@ model Log {
 
   message String? @db.String(255)
 
-  robot Robot @relation(fields: [robotId], references: [id])
+  robot Robot @relation(fields: [robotId], references: [id], onDelete: Cascade)
 
   robotId Int
 }
@@ -147,15 +147,15 @@ model Log {
 model UserLicense {
   id Int @id @default(sequence())
 
-  admin UserAccount @relation("UserLicenseAdminUserAccount", fields: [adminID], references: [id])
+  admin UserAccount @relation("UserLicenseAdminUserAccount", fields: [adminID], references: [id], onDelete: Cascade)
 
   adminID Int
 
-  user UserAccount @relation("UserLicenseUserAccount", fields: [userID], references: [id])
+  user UserAccount @relation("UserLicenseUserAccount", fields: [userID], references: [id], onDelete: Cascade)
 
   userID Int @unique
 
-  license License @relation(fields: [licenseID], references: [id])
+  license License @relation(fields: [licenseID], references: [id], onDelete: Cascade)
 
   licenseID Int
 
