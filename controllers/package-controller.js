@@ -15,6 +15,7 @@ const findUserById = async (id) => {
       },
       include: {
         packages: true
+        
       }
     });
     return result;
@@ -51,8 +52,29 @@ const coolFilesBucket = gc.bucket("prch-pkg");
 exports.getPackagesByUserID = async (req, res) => {
   let user = await findUserById(req.decodedUser.uuid)
   try {
+    const AllPackages = user.packages
+    const modifiedPackages = AllPackages.map((package) => {
+      const { id, name, uploadDate, packageUrl, ...rest } = package;
+      return {
+          packageId: id,
+          packageName: name, // Renaming "name" key to "packageName"
+          createdDate: uploadDate,
+          downloadUrl: packageUrl,
+          ...rest
+      };
+  });
+
+  const packageCount = {
+    packagesNumber:modifiedPackages.length,
+    packagesWithJobs:5,
+    dailyPackages: 8,
+
+  };
     //Returning fetched packages which is either an empty list or a existing list of packages
-    return res.status(200).json(user.packages)
+    return res.status(200).json({
+      counters: packageCount, 
+      packages: modifiedPackages      
+    })
   } catch (err) {
     console.log(`Error while retreiving all packages\n Error: ${err.message}`)
     //Returning empty list of packages to frontend request
@@ -66,15 +88,15 @@ exports.deletePackagesByID = async (req, res) => {
     let user = await findUserById(req.decodedUser.uuid)
 
     for (key in user.packages) {
-      console.log(user.packages[key])
       if (user.packages[key].id == req.params.id) {
-        await prisma.package.delete({
+        const deletedPackage = await prisma.package.delete({
           where: {
             id: parseInt(req.params.id, 10)
           }
         });
         return res.status(200).json({
-          "message": "Package deleted"
+          packageId: deletedPackage.id,
+          status: "Deleted"
         });
       }
     }
@@ -163,9 +185,8 @@ exports.updatePackage = async (req, res) => {
     
     let user = await findUserById(req.decodedUser.uuid)
     for (key in user.packages) {
-      console.log(user.packages[key])
       if (user.packages[key].id == req.params.id) {
-        await prisma.package.update({
+        const updatedPackage = await prisma.package.update({
           where: {
             id: parseInt(req.params.id, 10)
           },
@@ -175,8 +196,10 @@ exports.updatePackage = async (req, res) => {
           }
         });
         return res.status(200).json({
-          "message": "Package updated"
-        });
+          packageId: updatedPackage.id ,
+          packageName: req.body.name,
+          description: req.body.description
+          });
       }
     }
     return res.status(404).json({
