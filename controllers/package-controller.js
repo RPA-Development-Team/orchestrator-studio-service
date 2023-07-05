@@ -14,8 +14,11 @@ const findUserById = async (id) => {
         uuid: id
       },
       include: {
-        packages: true
-        
+        packages: {
+          include: {
+            jobs: true
+          }
+        }
       }
     });
     return result;
@@ -66,7 +69,7 @@ exports.getPackagesByUserID = async (req, res) => {
 
   const packageCount = {
     packagesNumber:modifiedPackages.length,
-    packagesWithJobs:5,
+    packagesWithJobs: user.packages.length,
     dailyPackages: 8,
 
   };
@@ -213,4 +216,3 @@ exports.updatePackage = async (req, res) => {
     });
   }
 };
-
