@@ -67,11 +67,16 @@ exports.getPackagesByUserID = async (req, res) => {
       };
   });
 
+  let jobCount = 0;
+
+  for (packageKey in user.packages) {
+    if (user.packages[packageKey].jobs.length > 0) jobCount++;
+  }
+
   const packageCount = {
     packagesNumber:modifiedPackages.length,
-    packagesWithJobs: user.packages.length,
-    dailyPackages: 8,
-
+    packagesWithJobs: jobCount,
+    dailyPackages: 3,
   };
     //Returning fetched packages which is either an empty list or a existing list of packages
     return res.status(200).json({
