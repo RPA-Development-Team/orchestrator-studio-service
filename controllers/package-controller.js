@@ -15,7 +15,9 @@ const findUserById = async (id) => {
       },
       include: {
         packages: {
-          jobs: true
+          include: {
+            jobs: true
+          }
         }
       }
     });
