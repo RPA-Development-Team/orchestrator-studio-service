@@ -87,6 +87,8 @@ model Package {
 
   name String @unique @db.String(255)
 
+  description String? @unique @db.String(255)
+
   uploadDate DateTime @default(now())
 
   packageUrl String? @unique @db.String(255)
