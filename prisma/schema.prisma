@@ -175,3 +175,19 @@ model License {
 
   userLicenses UserLicense[]
 }
+
+
+
+model Library {
+
+  id    Int @id @default(sequence()) 
+
+  name   String   
+
+  version String 
+
+  link String
+  
+  description String 
+
+}

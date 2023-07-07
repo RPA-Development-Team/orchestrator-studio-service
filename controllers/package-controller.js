@@ -48,9 +48,13 @@ const gc = new Storage({
   projectId: "neat-phoenix-391420",
 });
 
-
+// to get the id = the name of bucket in gc 
+// gc.getBuckets().then(x => console.log(x)); 
+// id: 'prch-pkg',
 
 const coolFilesBucket = gc.bucket("prch-pkg");
+const coolLibraryBucket = gc.bucket("orch-activities")
+
 
 exports.getPackagesByUserID = async (req, res) => {
   let user = await findUserById(req.decodedUser.uuid)
@@ -118,23 +122,27 @@ exports.deletePackagesByID = async (req, res) => {
   }
 }
 
-exports.getAllPackages = async (req, res) => {
+
+exports.getAllLibrarys = async (req, res) => {
   try {
     const prisma = new PrismaClient()
-    const AllPackages = await prisma.package.findMany()
-    //Returning fetched packages which is either an empty list or a existing list of packages
-    return res.status(200).json(AllPackages)
+    const allLibrarys = await prisma.library.findMany({
+      select: {
+        name: true,
+        version: true,
+        link: true,
+        description: true,
+      },
+    })
+    return res.status(200).json({ packages: allLibrarys })
   } catch (err) {
-    console.log(`Error while retreiving all packages\n Error: ${err.message}`)
-    //Returning empty list of packages to frontend request
+    console.log(`Error while retrieving all librarys\nError: ${err.message}`)
     res.status(500).json([])
   }
 }
 
 
-// to get the id = the name of bucket in gc 
-// gc.getBuckets().then(x => console.log(x)); 
-// id: 'prch-pkg',
+
 
 
 exports.createPackage = async (req, res) => {
@@ -183,6 +191,48 @@ exports.createPackage = async (req, res) => {
         res.status(201).json({ message: "Form data saved successfully" });
       }} catch (pErr) {
         console.log(pErr)
+      }
+    }
+  });
+}
+
+exports.createLibrary = async (req, res) => {    
+  // Get the xamlFile value from the POST request
+  let libraryData = req.body.data;
+  const buffer = Buffer.from(libraryData,"base64");
+  libraryData = buffer.toString("utf-8")
+  // Write the xamlFile value to the new file using Node's built-in file system module
+  const libpath = `lib-${Date.now()}.dll`;
+  const filePath = path.join(__dirname, `../librarys/${libpath}`);
+  fs.writeFile(filePath, libraryData, async function (err) {
+    if (err) {
+      // Handle any errors that occur during file write
+      console.error(err);
+      res.send("Error saving file");
+    } else {
+      // Upload the xamlFile to Google Cloud Storage
+      coolLibraryBucket.upload(filePath, {
+        gzip: true,
+        metadata: {
+          cacheControl:
+            "public, max-age=31536000", //This means that the file can be cached by any public client, such as a web browser, for up to 1 year
+        },
+      });
+      const pathDb = `http://orch-activities.storage.googleapis.com/${libpath} `;
+      // Save the form data to the database
+      const { name, version, description } = req.body;
+      try {
+          await prisma.library.create({
+              data: {
+                  name: name,
+                  link: pathDb,
+                  version: version ? version : "1.0",
+                  description: description
+              }
+          });
+          res.status(201).json({ message: "Form library saved successfully" });
+      } catch (pErr) {
+          console.log(pErr)
       }
     }
   });
