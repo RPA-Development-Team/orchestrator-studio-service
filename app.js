@@ -5,13 +5,17 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 const routes = require('./routes/routes');
+const cors = require('cors');
 
 // Use the body-parser middleware to parse HTTP request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/api', routes);
+app.use(cors({
+  origin: '*'
+}));
 
+app.use('/api', routes);
 
 
 // Start the server and listen on port 8000
