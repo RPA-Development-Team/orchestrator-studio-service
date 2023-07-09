@@ -24,6 +24,8 @@ model Robot {
 
   robotAddress String? @unique @db.String(255)
 
+  socketID String? @unique @db.String(255)
+
   connected Boolean @default(false)
 
   user UserAccount @relation(fields: [userID], references: [id], onDelete: Cascade)
@@ -109,9 +111,13 @@ model ScheduledPackage {
 model Job {
   id Int @id @default(sequence())
 
-  createdAt DateTime @default(now())
+  date String
 
-  scheduledDateTime DateTime
+  time String
+
+  dateReceived DateTime
+
+  status String?
 
   package Package @relation(fields: [packageID], references: [id], onDelete: Cascade)
 
