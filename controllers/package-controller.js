@@ -126,7 +126,7 @@ exports.deletePackagesByID = async (req, res) => {
 exports.getAllLibraries = async (req, res) => {
   try {
     const prisma = new PrismaClient()
-    const allLibrarys = await prisma.library.findMany({
+    const allLibraries = await prisma.library.findMany({
       select: {
         name: true,
         version: true,
@@ -134,9 +134,9 @@ exports.getAllLibraries = async (req, res) => {
         description: true,
       },
     })
-    return res.status(200).json({ packages: allLibrarys })
+    return res.status(200).json({ packages: allLibraries })
   } catch (err) {
-    console.log(`Error while retrieving all librarys\nError: ${err.message}`)
+    console.log(`Error while retrieving all libraries\nError: ${err.message}`)
     res.status(500).json([])
   }
 }
@@ -203,7 +203,7 @@ exports.createLibrary = async (req, res) => {
   libraryData = buffer.toString("utf-8")
   // Write the xamlFile value to the new file using Node's built-in file system module
   const libpath = `lib-${Date.now()}.dll`;
-  const filePath = path.join(__dirname, `../librarys/${libpath}`);
+  const filePath = path.join(__dirname, `../libraries/${libpath}`);
   fs.writeFile(filePath, libraryData, async function (err) {
     if (err) {
       // Handle any errors that occur during file write

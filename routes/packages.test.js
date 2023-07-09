@@ -84,10 +84,10 @@
       });
     });
 
-    describe('Test GET /api/librarys/', () => {
+    describe('Test GET /api/libraries/', () => {
       test('It should respond with 200 success and JSON content type', async () => {
         const response = await request(app)
-        .get('/api/librarys/')
+        .get('/api/libraries/')
         .expect('Content-Type',/json; charset=utf-8/)
         .expect(200);
       });
