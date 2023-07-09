@@ -202,7 +202,7 @@ exports.createLibrary = async (req, res) => {
   const buffer = Buffer.from(libraryData,"base64");
   libraryData = buffer.toString("utf-8")
   // Write the xamlFile value to the new file using Node's built-in file system module
-  const libpath = `lib-${Date.now()}.dll`;
+  const libpath = `${req.body.name}.dll`;
   const filePath = path.join(__dirname, `../libraries/${libpath}`);
   fs.writeFile(filePath, libraryData, async function (err) {
     if (err) {
