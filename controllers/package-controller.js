@@ -134,7 +134,7 @@ exports.getAllLibraries = async (req, res) => {
         description: true,
       },
     })
-    return res.status(200).json({ packages: allLibraries })
+    return res.status(200).json({ allLibraries })
   } catch (err) {
     console.log(`Error while retrieving all libraries\nError: ${err.message}`)
     res.status(500).json([])
