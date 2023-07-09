@@ -65,7 +65,7 @@ model UserAccount {
 
   externalProvider String? @db.String(25)
 
-  admin UserAccount? @relation("UserAccount", fields: [adminID], references: [id], onDelete: Cascade)
+  admin UserAccount? @relation("UserAccount", fields: [adminID], references: [id])
 
   adminID Int?
 
@@ -175,8 +175,6 @@ model License {
 
   userLicenses UserLicense[]
 }
-
-
 
 model Library {
 
