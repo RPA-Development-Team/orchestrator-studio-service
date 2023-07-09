@@ -123,7 +123,7 @@ exports.deletePackagesByID = async (req, res) => {
 }
 
 
-exports.getAllLibrarys = async (req, res) => {
+exports.getAllLibraries = async (req, res) => {
   try {
     const prisma = new PrismaClient()
     const allLibrarys = await prisma.library.findMany({
